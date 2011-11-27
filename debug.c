@@ -22,11 +22,11 @@ void debug(const char *fmt, ...)
 }
 
 void debugPacketBytes(u8* packet, int len) {
-//	int i = 0;
-//	for (i = 0; i < len; i++) {
-//		debug("%x ", packet[i]);
-//	}
-//	debug("\n");
+	int i = 0;
+	for (i = 0; i < len; i++) {
+		debug("%x ", packet[i]);
+	}
+	debug("\n");
 }
 #else
 void debug(const char *fmt, ...) {
