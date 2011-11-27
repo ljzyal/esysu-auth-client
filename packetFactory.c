@@ -45,21 +45,30 @@ void generateEapolLogoff() {
 }
 
 void generateUsername() {
+	packet.length = 23+2+28+2+strlen(usrArgus.username);
 	memset(packet.buf, 0, packet.length); // clear buffer
-	packet.length = 60;
 	u8* buf = packet.buf;
 
 	setSrcDstTypeVersionCommonHeader(buf);
 	((PEAPOLHDR) buf)->Type = EAP_Packet;
-	((PEAPOLHDR) buf)->Length = htons(strlen(usrArgus.username) + 0x05);
+	((PEAPOLHDR) buf)->Length = htons(strlen(usrArgus.username) +2+28+2 + 0x05);
 	((PEAPHDR) buf)->Code = EAP_Response;
 	((PEAPHDR) buf)->Id = packetId;
 	((PEAPHDR) buf)->Length = ((PEAPOLHDR) buf)->Length;
 	((PEAPHDR) buf)->Type = EAP_Identity;
-	memcpy((&((PEAPHDR) buf)->Type) + 1, usrArgus.username, strlen(
+
+	// temp fix for version upload (iNode V5.0)
+	u8 data[2+28+2] = { 0x06,
+		0x07, 0x4f, 0x6a, 0x4d, 0x48, 0x53, 0x30, 0x77,
+		0x4e, 0x5a, 0x69, 0x46, 0x34, 0x48, 0x78, 0x63,
+		0x30, 0x63, 0x56, 0x38, 0x71, 0x4b, 0x50, 0x47,
+		0x41, 0x41, 0x51, 0x49, 0x3d, 0x20, 0x20 };	
+	memcpy((&((PEAPHDR) buf)->Type) + 1, data, 2+28+2);
+
+	memcpy((&((PEAPHDR) buf)->Type) + 1 + 2+28+2, usrArgus.username, strlen(
 			usrArgus.username));
 
-	debugPacketBytes(buf, 60);
+	debugPacketBytes(buf, packet.length);
 }
 
 void generatePapPassword() {
